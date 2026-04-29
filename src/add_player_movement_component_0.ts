@@ -1,18 +1,15 @@
 class PlayerMovementComponent {
+  private velocity: Vector3 = new Vector3(0, 0, 0);
   private speed: number = 5.0;
-  private rigidbody: any;
-  private input: any;
+  private rigidbody: Rigidbody;
 
   constructor() {
-    this.rigidbody = this.getComponent("Rigidbody");
-    this.input = this.getComponent("Input");
+    this.rigidbody = this.gameObject.GetComponent<Rigidbody>();
   }
 
-  update(deltaTime: number): void {
-    const moveX = this.input.getKey("A") ? -1 : this.input.getKey("D") ? 1 : 0;
-    const moveZ = this.input.getKey("S") ? 1 : this.input.getKey("W") ? -1 : 0;
-    
-    const movement = new Vector3(moveX, 0, moveZ).normalized * this.speed * deltaTime;
-    this.rigidbody.position += movement;
+  private Update(): void {
+    this.velocity.x = Input.GetAxis("Horizontal") * this.speed;
+    this.velocity.z = Input.GetAxis("Vertical") * this.speed;
+    this.rigidbody.velocity = new Vector3(this.velocity.x, this.rigidbody.velocity.y, this.velocity.z);
   }
 }
