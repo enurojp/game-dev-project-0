@@ -1,54 +1,68 @@
 enum PlayerState {
-  IDLE,
-  RUNNING,
-  JUMPING,
-  FALLING
+  Idle,
+  Running,
+  Jumping,
+  Falling
 }
 
 class PlayerController {
-  private state: PlayerState = PlayerState.IDLE;
+  private state: PlayerState = PlayerState.Idle;
   private velocity: Vector2 = new Vector2(0, 0);
-  private isGrounded: boolean = true;
-  private moveDirection: number = 0;
+  private isGrounded: boolean = false;
+  private readonly gravity: number = 9.81;
+  private readonly jumpForce: number = 10;
+  private readonly moveSpeed: number = 5;
 
   public update(deltaTime: number): void {
-    this.handleInput();
-    this.updateState();
-    this.applyPhysics(deltaTime);
-    this.updateAnimation();
-  }
-
-  private handleInput(): void {
-    this.moveDirection = Input.GetAxis("Horizontal");
-  }
-
-  private updateState(): void {
-    if (this.moveDirection !== 0 && this.isGrounded) {
-      this.state = PlayerState.RUNNING;
-    } else if (this.moveDirection === 0 && this.isGrounded) {
-      this.state = PlayerState.IDLE;
-    } else if (this.velocity.y > 0) {
-      this.state = PlayerState.JUMPING;
-    } else if (this.velocity.y < 0) {
-      this.state = PlayerState.FALLING;
-    }
-  }
-
-  private applyPhysics(deltaTime: number): void {
     switch (this.state) {
-      case PlayerState.RUNNING:
-        this.velocity.x = this.moveDirection * 200;
+      case PlayerState.Idle:
+        this.handleIdle();
         break;
-      case PlayerState.IDLE:
-        this.velocity.x = 0;
+      case PlayerState.Running:
+        this.handleRunning();
+        break;
+      case PlayerState.Jumping:
+        this.handleJumping(deltaTime);
+        break;
+      case PlayerState.Falling:
+        this.handleFalling(deltaTime);
         break;
     }
-
-    this.velocity.y += -600 * deltaTime;
-    this.velocity.y = Math.max(this.velocity.y, -1000);
   }
 
-  private updateAnimation(): void {
-    // Animation logic would go here
+  private handleIdle(): void {
+    if (this.isGrounded && Input.isActionPressed("move_right")) {
+      this.state = PlayerState.Running;
+    }
+  }
+
+  private handleRunning(): void {
+    if (!Input.isActionPressed("move_right")) {
+      this.state = PlayerState.Idle;
+    } else if (this.isGrounded && Input.isActionPressed("jump")) {
+      this.state = PlayerState.Jumping;
+      this.velocity.y = this.jumpForce;
+    }
+  }
+
+  private handleJumping(deltaTime: number): void {
+    this.velocity.y -= this.gravity * deltaTime;
+    
+    if (this.velocity.y <= 0) {
+      this.state = PlayerState.Falling;
+    }
+  }
+
+  private handleFalling(deltaTime: number): void {
+    this.velocity.y -= this.gravity * deltaTime;
+    
+    if (this.isGrounded) {
+      this.state = PlayerState.Idle;
+      this.velocity.y = 0;
+    }
+  }
+
+  public setGrounded(grounded: boolean): void {
+    this.isGrounded = grounded;
   }
 }
