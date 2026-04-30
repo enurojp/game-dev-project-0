@@ -1,68 +1,61 @@
-enum PlayerState {
-  Idle,
-  Running,
-  Jumping,
-  Falling
+class PlayerState {
+  protected player: PlayerController;
+  
+  constructor(player: PlayerController) {
+    this.player = player;
+  }
+  
+  update(): void {}
+  handleInput(): void {}
+  onEnter(): void {}
+  onExit(): void {}
+}
+
+class IdleState extends PlayerState {
+  onEnter(): void {
+    this.player.animator.setState("idle");
+  }
+  
+  handleInput(): void {
+    if (this.player.input.isPressed("move_left") || 
+        this.player.input.isPressed("move_right")) {
+      this.player.changeState(new MovingState(this.player));
+    }
+  }
+}
+
+class MovingState extends PlayerState {
+  onEnter(): void {
+    this.player.animator.setState("moving");
+  }
+  
+  handleInput(): void {
+    if (!this.player.input.isPressed("move_left") && 
+        !this.player.input.isPressed("move_right")) {
+      this.player.changeState(new IdleState(this.player));
+    }
+  }
 }
 
 class PlayerController {
-  private state: PlayerState = PlayerState.Idle;
-  private velocity: Vector2 = new Vector2(0, 0);
-  private isGrounded: boolean = false;
-  private readonly gravity: number = 9.81;
-  private readonly jumpForce: number = 10;
-  private readonly moveSpeed: number = 5;
-
-  public update(deltaTime: number): void {
-    switch (this.state) {
-      case PlayerState.Idle:
-        this.handleIdle();
-        break;
-      case PlayerState.Running:
-        this.handleRunning();
-        break;
-      case PlayerState.Jumping:
-        this.handleJumping(deltaTime);
-        break;
-      case PlayerState.Falling:
-        this.handleFalling(deltaTime);
-        break;
-    }
+  private currentState: PlayerState;
+  private animator: Animator;
+  private input: InputManager;
+  
+  constructor() {
+    this.currentState = new IdleState(this);
+    this.animator = new Animator();
+    this.input = new InputManager();
   }
-
-  private handleIdle(): void {
-    if (this.isGrounded && Input.isActionPressed("move_right")) {
-      this.state = PlayerState.Running;
-    }
+  
+  update(): void {
+    this.currentState.update();
+    this.currentState.handleInput();
   }
-
-  private handleRunning(): void {
-    if (!Input.isActionPressed("move_right")) {
-      this.state = PlayerState.Idle;
-    } else if (this.isGrounded && Input.isActionPressed("jump")) {
-      this.state = PlayerState.Jumping;
-      this.velocity.y = this.jumpForce;
-    }
-  }
-
-  private handleJumping(deltaTime: number): void {
-    this.velocity.y -= this.gravity * deltaTime;
-    
-    if (this.velocity.y <= 0) {
-      this.state = PlayerState.Falling;
-    }
-  }
-
-  private handleFalling(deltaTime: number): void {
-    this.velocity.y -= this.gravity * deltaTime;
-    
-    if (this.isGrounded) {
-      this.state = PlayerState.Idle;
-      this.velocity.y = 0;
-    }
-  }
-
-  public setGrounded(grounded: boolean): void {
-    this.isGrounded = grounded;
+  
+  changeState(newState: PlayerState): void {
+    this.currentState.onExit();
+    this.currentState = newState;
+    this.currentState.onEnter();
   }
 }
