@@ -1,74 +1,52 @@
 enum PlayerState {
-  IDLE,
-  WALKING,
-  JUMPING,
-  FALLING
+    Idle,
+    Running,
+    Jumping,
+    Falling
 }
 
 class PlayerController {
-  private state: PlayerState = PlayerState.IDLE;
-  private velocity: Vector2 = new Vector2(0, 0);
-  private isGrounded: boolean = false;
-  private readonly gravity: number = 9.81;
-  private readonly jumpForce: number = 10;
-  private readonly moveSpeed: number = 5;
+    private state: PlayerState = PlayerState.Idle;
+    private velocity: Vector2 = new Vector2(0, 0);
+    private isGrounded: boolean = false;
+    private readonly gravity: number = 9.81;
+    private readonly jumpForce: number = 10;
+    private readonly moveSpeed: number = 5;
 
-  public update(deltaTime: number): void {
-    this.handleInput();
-    this.updatePhysics(deltaTime);
-    this.updateAnimation();
-  }
-
-  private handleInput(): void {
-    const inputX = Input.GetAxis("Horizontal");
-    
-    if (inputX !== 0) {
-      this.state = PlayerState.WALKING;
-      this.velocity.x = inputX * this.moveSpeed;
-    } else {
-      this.velocity.x = 0;
-      if (this.isGrounded) {
-        this.state = PlayerState.IDLE;
-      }
+    public Update(deltaTime: number): void {
+        this.HandleInput();
+        this.UpdatePhysics(deltaTime);
+        this.UpdateState();
     }
 
-    if (Input.GetButtonDown("Jump") && this.isGrounded) {
-      this.state = PlayerState.JUMPING;
-      this.velocity.y = this.jumpForce;
-      this.isGrounded = false;
+    private HandleInput(): void {
+        if (Input.IsKeyPressed(Key.Space) && this.isGrounded) {
+            this.velocity.y = this.jumpForce;
+            this.state = PlayerState.Jumping;
+        }
+
+        if (Input.IsKeyPressed(Key.A)) {
+            this.velocity.x = -this.moveSpeed;
+        } else if (Input.IsKeyPressed(Key.D)) {
+            this.velocity.x = this.moveSpeed;
+        } else {
+            this.velocity.x = 0;
+        }
     }
-  }
 
-  private updatePhysics(deltaTime: number): void {
-    if (!this.isGrounded) {
-      this.velocity.y -= this.gravity * deltaTime;
-      this.state = PlayerState.FALLING;
+    private UpdatePhysics(deltaTime: number): void {
+        this.velocity.y += this.gravity * deltaTime;
     }
 
-    // Apply velocity to position
-    this.position.x += this.velocity.x * deltaTime;
-    this.position.y += this.velocity.y * deltaTime;
-  }
-
-  private updateAnimation(): void {
-    // Animation logic based on state
-    switch (this.state) {
-      case PlayerState.IDLE:
-        this.playAnimation("idle");
-        break;
-      case PlayerState.WALKING:
-        this.playAnimation("walk");
-        break;
-      case PlayerState.JUMPING:
-        this.playAnimation("jump");
-        break;
-      case PlayerState.FALLING:
-        this.playAnimation("fall");
-        break;
+    private UpdateState(): void {
+        if (this.velocity.y !== 0 && this.isGrounded) {
+            this.state = PlayerState.Jumping;
+        } else if (this.velocity.y > 0 && !this.isGrounded) {
+            this.state = PlayerState.Falling;
+        } else if (this.velocity.x !== 0) {
+            this.state = PlayerState.Running;
+        } else {
+            this.state = PlayerState.Idle;
+        }
     }
-  }
-
-  private playAnimation(animationName: string): void {
-    // Animation playback logic
-  }
 }

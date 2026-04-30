@@ -9,72 +9,46 @@ class PlayerController {
   private state: PlayerState = PlayerState.IDLE;
   private velocity: Vector2 = new Vector2(0, 0);
   private isGrounded: boolean = true;
-  private speed: number = 200;
-  private jumpForce: number = 400;
+  private moveDirection: number = 0;
 
-  update(delta: number): void {
-    switch (this.state) {
-      case PlayerState.IDLE:
-        this.handleIdle();
-        break;
-      case PlayerState.RUNNING:
-        this.handleRunning(delta);
-        break;
-      case PlayerState.JUMPING:
-        this.handleJumping(delta);
-        break;
-      case PlayerState.FALLING:
-        this.handleFalling(delta);
-        break;
-    }
-    
+  public update(deltaTime: number): void {
+    this.handleInput();
     this.updateState();
+    this.applyPhysics(deltaTime);
+    this.updateAnimation();
   }
 
-  private handleIdle(): void {
-    if (Input.isActionPressed("move_right") || Input.isActionPressed("move_left")) {
-      this.state = PlayerState.RUNNING;
-    }
-  }
-
-  private handleRunning(delta: number): void {
-    const direction = new Vector2(
-      Input.getActionStrength("move_right") - Input.getActionStrength("move_left"),
-      0
-    );
-    
-    this.velocity.x = direction.x * this.speed;
-    
-    if (Input.isActionJustPressed("jump") && this.isGrounded) {
-      this.velocity.y = this.jumpForce;
-      this.state = PlayerState.JUMPING;
-    }
-  }
-
-  private handleJumping(delta: number): void {
-    this.velocity.y -= 980 * delta;
-    
-    if (this.velocity.y <= 0) {
-      this.state = PlayerState.FALLING;
-    }
-  }
-
-  private handleFalling(delta: number): void {
-    this.velocity.y -= 980 * delta;
-    
-    if (this.isGrounded) {
-      this.velocity.y = 0;
-      this.state = PlayerState.IDLE;
-    }
+  private handleInput(): void {
+    this.moveDirection = Input.GetAxis("Horizontal");
   }
 
   private updateState(): void {
-    if (this.velocity.x !== 0 && this.isGrounded) {
+    if (this.moveDirection !== 0 && this.isGrounded) {
       this.state = PlayerState.RUNNING;
-    } else if (this.velocity.y > 0 && !this.isGrounded) {
+    } else if (this.moveDirection === 0 && this.isGrounded) {
+      this.state = PlayerState.IDLE;
+    } else if (this.velocity.y > 0) {
       this.state = PlayerState.JUMPING;
-    } else if (this.velocity.y < 0 && !this.isGrounded) {
+    } else if (this.velocity.y < 0) {
       this.state = PlayerState.FALLING;
     }
+  }
+
+  private applyPhysics(deltaTime: number): void {
+    switch (this.state) {
+      case PlayerState.RUNNING:
+        this.velocity.x = this.moveDirection * 200;
+        break;
+      case PlayerState.IDLE:
+        this.velocity.x = 0;
+        break;
+    }
+
+    this.velocity.y += -600 * deltaTime;
+    this.velocity.y = Math.max(this.velocity.y, -1000);
+  }
+
+  private updateAnimation(): void {
+    // Animation logic would go here
   }
 }
