@@ -9,20 +9,23 @@ A cross-engine game prototype built with Unity, C#, and Godot, showcasing integr
 git clone https://github.com/yourusername/game-dev-project-0.git
 cd game-dev-project-0
 
-# Open Unity Hub and add the project
-# Or open directly with Unity 2022.3 LTS
+# Open with Unity Hub
+# File → Open Project → Select the Unity folder
 ```
 
 ## Usage
 
-```bash
-# For Unity scenes:
-# Open Unity project and navigate to Assets/Scenes/
+```csharp
+// Example Unity C# script
+using UnityEngine;
 
-# For Godot integration:
-# Open Godot project in Godot Editor
-# Import Unity assets via the import dialog
-# Run scenes from both engines using their respective editors
+public class GameHandler : MonoBehaviour
+{
+    void Start()
+    {
+        Debug.Log("Game initialized with Godot integration");
+    }
+}
 ```
 
 ## License
