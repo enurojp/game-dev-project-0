@@ -1,53 +1,29 @@
 # Game Dev Project 0
 
-A cross-platform game built with Unity, C#, and Godot engine integration. This project demonstrates hybrid game development approaches using multiple game engines.
+A cross-engine game prototype built with Unity, C#, and Godot, showcasing integration between different game development ecosystems.
 
-## Installation
+## Installation (Unity)
 
-### Prerequisites
-- Unity 2022.3 LTS or later
-- Godot 4.2 or later
-- Visual Studio 2022 or Rider IDE
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/game-dev-project-0.git
+cd game-dev-project-0
 
-### Setup Instructions
-1. Clone the repository:
-   ```
-   git clone https://github.com/yourusername/game-dev-project-0.git
-   ```
-
-2. Open the project in Unity:
-   ```
-   cd game-dev-project-0
-   ```
-
-3. Install required Unity packages via Package Manager:
-   - Godot Integration Package (available in Unity Asset Store)
-   - C# Scripting Framework
-
-4. Configure Godot integration:
-   - Install Godot Editor
-   - Set up Godot project in `Assets/GodotProject`
-   - Configure build settings in Unity
+# Open with Unity Hub
+# File → Open Project → Select the Unity folder
+```
 
 ## Usage
 
-### Basic Setup
-1. Open Unity project in Unity Hub
-2. Navigate to `Scenes/MainScene` and press Play
-3. The game will automatically detect Godot assets and load them
-
-### Example Code
 ```csharp
-// Example of Godot integration in Unity
-using Godot;
+// Example Unity C# script
+using UnityEngine;
 
-public class GameIntegration : MonoBehaviour
+public class GameHandler : MonoBehaviour
 {
     void Start()
     {
-        // Initialize Godot scene
-        GodotScene scene = new GodotScene("Scenes/Player.tscn");
-        scene.Load();
+        Debug.Log("Game initialized with Godot integration");
     }
 }
 ```
