@@ -1,38 +1,32 @@
-# Game Dev Project 0
+# game-dev-project-0
 
-A cross-engine game prototype built with Unity, C#, and Godot, showcasing integration between different game development ecosystems.
+A cross-platform game built with Unity, C#, and Godot, showcasing integration between multiple game engines for enhanced development workflows.
 
 ## Installation (Unity)
 
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/game-dev-project-0.git
-cd game-dev-project-0
-
-# Open with Unity Hub
-# File → Open Project → Select the Unity folder
-```
+1. Download and install Unity Hub from https://unity.com/download
+2. Install Unity Editor 2022.3 LTS through Unity Hub
+3. Clone this repository:
+   ```bash
+   git clone https://github.com/yourusername/game-dev-project-0.git
+   ```
+4. Open the project folder in Unity Hub
 
 ## Usage
 
-```csharp
-// Example Unity C# script
-using UnityEngine;
+To run the game:
+1. Open the project in Unity Editor
+2. Navigate to the Scenes folder
+3. Double-click on MainScene.unity to load it
+4. Press the Play button to start the game
 
-public class GameHandler : MonoBehaviour
-{
-    void Start()
-    {
-        Debug.Log("Game initialized with Godot integration");
-    }
-}
-```
+For Godot integration, ensure Godot 4.x is installed and properly configured in Unity's External Editor settings.
 
 ## License
 
 MIT License
 
-Copyright (c) 2024 Game Dev Project 0
+Copyright (c) 2024 game-dev-project-0
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
